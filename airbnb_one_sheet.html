@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Airbnb Investment Analysis - 126 King's Cross Road</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.4;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
+            color: white;
+            padding: 30px 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.1)"/></svg>') repeat;
+            animation: float 20s infinite linear;
+        }
+
+        @keyframes float {
+            0% { transform: translateX(0) translateY(0); }
+            100% { transform: translateX(-50px) translateY(-50px); }
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .property-title {
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .property-subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+
+        .key-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .metric-card {
+            background: rgba(255,255,255,0.2);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .metric-value {
+            font-size: 1.8em;
+            font-weight: 700;
+            display: block;
+        }
+
+        .metric-label {
+            font-size: 0.9em;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+
+        .main-content {
+            padding: 40px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+
+        .scenarios-section {
+            grid-column: 1 / -1;
+        }
+
+        .section-title {
+            font-size: 1.8em;
+            font-weight: 700;
+            margin-bottom: 25px;
+            color: #2c3e50;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, #FF6B6B, #FF8E53);
+            border-radius: 2px;
+        }
+
+        .scenarios-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .scenario-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            position: relative;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .scenario-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+
+        .scenario-card.pessimistic {
+            border-color: #e74c3c;
+        }
+
+        .scenario-card.base {
+            border-color: #3498db;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e3f2fd 100%);
+        }
+
+        .scenario-card.optimistic {
+            border-color: #27ae60;
+        }
+
+        .scenario-header {
+            font-size: 1.3em;
+            font-weight: 700;
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 8px;
+            color: white;
+        }
+
+        .pessimistic .scenario-header {
+            background: #e74c3c;
+        }
+
+        .base .scenario-header {
+            background: #3498db;
+        }
+
+        .optimistic .scenario-header {
+            background: #27ae60;
+        }
+
+        .scenario-metrics {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .scenario-metric {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .scenario-metric:last-child {
+            border-bottom: none;
+        }
+
+        .metric-name {
+            font-weight: 600;
+            color: #555;
+        }
+
+        .metric-value-scenario {
+            font-weight: 700;
+            font-size: 1.1em;
+        }
+
+        .revenue-highlight {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            text-align: center;
+        }
+
+        .revenue-highlight .amount {
+            font-size: 2em;
+            font-weight: 700;
+            display: block;
+        }
+
+        .revenue-highlight .label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .comparison-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 30px 0;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .comparison-item {
+            text-align: center;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .comparison-value {
+            font-size: 1.5em;
+            font-weight: 700;
+            color: #2c3e50;
+            display: block;
+        }
+
+        .comparison-label {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .risk-opportunity {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .risk-card, .opportunity-card {
+            padding: 25px;
+            border-radius: 15px;
+            position: relative;
+        }
+
+        .risk-card {
+            background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+            border-left: 5px solid #e74c3c;
+        }
+
+        .opportunity-card {
+            background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%);
+            border-left: 5px solid #27ae60;
+        }
+
+        .card-title {
+            font-size: 1.3em;
+            font-weight: 700;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .risk-card .card-title {
+            color: #c62828;
+        }
+
+        .opportunity-card .card-title {
+            color: #2e7d32;
+        }
+
+        .card-content {
+            line-height: 1.6;
+            color: #555;
+        }
+
+        .card-content ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .card-content li {
+            padding: 5px 0;
+            position: relative;
+            padding-left: 20px;
+        }
+
+        .card-content li::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+
+        .risk-card li::before {
+            color: #e74c3c;
+        }
+
+        .opportunity-card li::before {
+            color: #27ae60;
+        }
+
+        .conclusion {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .conclusion-title {
+            font-size: 1.5em;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .conclusion-text {
+            font-size: 1.1em;
+            line-height: 1.6;
+            opacity: 0.9;
+        }
+
+        .footer {
+            background: #2c3e50;
+            color: white;
+            padding: 20px 40px;
+            text-align: center;
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 30px;
+                padding: 30px 20px;
+            }
+
+            .scenarios-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .risk-opportunity {
+                grid-template-columns: 1fr;
+            }
+
+            .property-title {
+                font-size: 2em;
+            }
+
+            .key-metrics {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .icon {
+            width: 24px;
+            height: 24px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-content">
+                <h1 class="property-title">126 King's Cross Road</h1>
+                <p class="property-subtitle">Airbnb Investment Analysis • Bloomsbury, London</p>
+                
+                <div class="key-metrics">
+                    <div class="metric-card">
+                        <span class="metric-value">91/100</span>
+                        <div class="metric-label">Submarket Score</div>
+                    </div>
+                    <div class="metric-card">
+                        <span class="metric-value">1 Bed, 1 Bath</span>
+                        <div class="metric-label">Sleeps up to 4</div>
+                    </div>
+                    <div class="metric-card">
+                        <span class="metric-value">48</span>
+                        <div class="metric-label">Comparable Listings</div>
+                    </div>
+                    <div class="metric-card">
+                        <span class="metric-value">£19K-£79K</span>
+                        <div class="metric-label">Local Range</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="scenarios-section">
+                <h2 class="section-title">Financial Performance Scenarios</h2>
+                
+                <div class="scenarios-grid">
+                    <div class="scenario-card pessimistic">
+                        <div class="scenario-header">Pessimistic</div>
+                        <div class="revenue-highlight">
+                            <span class="amount">£24,500</span>
+                            <div class="label">Net Annual Income</div>
+                        </div>
+                        <div class="scenario-metrics">
+                            <div class="scenario-metric">
+                                <span class="metric-name">Gross Revenue</span>
+                                <span class="metric-value-scenario">£38,000</span>
+                            </div>
+                            <div class="scenario-metric">
+                                <span class="metric-name">Average Daily Rate</span>
+                                <span class="metric-value-scenario">£130</span>
+                            </div>
+                            <div class="scenario-metric">
+                                <span class="metric-name">Occupancy Rate</span>
+                                <span class="metric-value-scenario">65%</span>
+                            </div>
+                            <div class="scenario-metric">
+                                <span class="metric-name">Operating Expenses</span>
+                                <span class="metric-value-scenario">£13,500</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="scenario-card base">
+                        <div class="scenario-header">Base Case (Expected)</div>
+                        <div class="revenue-highlight">
+                            <span class="amount">£31,600</span>
+                            <div class="label">Net Annual Income</div>
+                        </div>
+                        <div class="scenario-metrics">
+                            <div class="scenario-metric">
+                                <span class="metric-name">Gross Revenue</span>
+                                <span class="metric-value-scenario">£43,800</span>
+                            </div>
+                            <div class="scenario-metric">
+                                <span class="metric-name">Average Daily Rate</span>
+                                <span class="metric-value-scenario">£151</span>
+                            </div>
+                            <div class="scenario-metric">
+                                <span class="metric-name">Occupancy Rate</span>
+                                <span class="metric-value-scenario">80%</span>
+                            </div>
+                            <div class="scenario-metric">
+                                <span class="metric-name">Operating Expenses</span>
+                                <span class="metric-value-scenario">£12,200</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="scenario-card optimistic">
+                        <div class="scenario-header">Optimistic</div>
+                        <div class="revenue-highlight">
+                            <span class="amount">£35,800</span>
+                            <div class="label">Net Annual Income</div>
+                        </div>
+                        <div class="scenario-metrics">
+                            <div class="scenario-metric">
+                                <span class="metric-name">Gross Revenue</span>
+                                <span class="metric-value-scenario">£48,000</span>
+                            </div>
+                            <div class="scenario-metric">
+                                <span class="metric-name">Average Daily Rate</span>
+                                <span class="metric-value-scenario">£170</span>
+                            </div>
+                            <div class="scenario-metric">
+                                <span class="metric-name">Occupancy Rate</span>
+                                <span class="metric-value-scenario">88%</span>
+                            </div>
+                            <div class="scenario-metric">
+                                <span class="metric-name">Operating Expenses</span>
+                                <span class="metric-value-scenario">£12,200</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="comparison-section">
+                    <h3 class="section-title">Market Performance Comparison</h3>
+                    <div class="comparison-grid">
+                        <div class="comparison-item">
+                            <span class="comparison-value">£43,800</span>
+                            <div class="comparison-label">Your Property (Base)</div>
+                        </div>
+                        <div class="comparison-item">
+                            <span class="comparison-value">£39,000</span>
+                            <div class="comparison-label">Local Median</div>
+                        </div>
+                        <div class="comparison-item">
+                            <span class="comparison-value">+12%</span>
+                            <div class="comparison-label">Above Market</div>
+                        </div>
+                        <div class="comparison-item">
+                            <span class="comparison-value">£1,700-£5,100</span>
+                            <div class="comparison-label">Monthly Range</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="risk-opportunity">
+                <div class="risk-card">
+                    <h3 class="card-title">
+                        <span class="icon">⚠️</span>
+                        Key Risks
+                    </h3>
+                    <div class="card-content">
+                        <ul>
+                            <li>Low bookings in Jan-Mar (seasonal dip)</li>
+                            <li>Potential regulatory/tax changes</li>
+                            <li>Increased running costs over time</li>
+                            <li>Extra cleaning/maintenance needs</li>
+                            <li>90-day annual limit for entire home rentals</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="opportunity-card">
+                    <h3 class="card-title">
+                        <span class="icon">🚀</span>
+                        Key Opportunities
+                    </h3>
+                    <div class="card-content">
+                        <ul>
+                            <li>High Bloomsbury demand (tourists & professionals)</li>
+                            <li>Outperform market with good furnishing & management</li>
+                            <li>Price spikes during events and high season</li>
+                            <li>Excellent transport links (King's Cross St. Pancras)</li>
+                            <li>Premium location with 91/100 submarket score</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="conclusion">
+                <h3 class="conclusion-title">Investment Recommendation</h3>
+                <p class="conclusion-text">
+                    126 King's Cross Road presents a <strong>strong investment opportunity</strong> for Airbnb in central London. 
+                    With a base case net income of £31,600 annually and excellent upside potential of £35,800, 
+                    this property offers solid returns with moderate seasonal risk. The premium Bloomsbury location 
+                    and exceptional transport connectivity provide sustainable competitive advantages.
+                </p>
+            </div>
+        </div>
+
+        <div class="footer">
+            Report based on AirDNA analytics and local market data. All figures are estimates. 
+            Professional management recommended to achieve optimal performance.
+        </div>
+    </div>
+</body>
+</html>
+
